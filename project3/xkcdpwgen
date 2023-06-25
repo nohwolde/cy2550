@@ -1,0 +1,57 @@
+#!/usr/bin/env python3
+
+import argparse
+import random
+import string
+
+
+def main():
+    # Parse command-line arguments
+    parser = argparse.ArgumentParser(
+        description='Generate a secure, memorable password using the XKCD method')
+    parser.add_argument('-w', '--words', type=int, default=4,
+                        help='include WORDS words in the password (default=4)')
+    parser.add_argument('-c', '--caps', type=int, default=0,
+                        help='capitalize the first letter of CAPS random words (default=0)')
+    parser.add_argument('-n', '--numbers', type=int, default=0,
+                        help='insert NUMBERS random numbers in the password (default=0)')
+    parser.add_argument('-s', '--symbols', type=int, default=0,
+                        help='insert SYMBOLS random symbols in the password (default=0)')
+
+    args = parser.parse_args()
+
+    # Load the word list
+    wordlist = []
+    with open('words.txt', 'r') as f:
+        for line in f:
+            wordlist.append(line.strip())
+
+    # Generate the password
+    password_words = []
+    for i in range(args.words):
+        password_words.append(random.choice(wordlist))
+
+    # Capitalize random words if requested
+    for i in range(args.caps):
+        index = random.randint(0, len(password_words) - 1)
+        password_words[index] = password_words[index].capitalize()
+
+    password = ''.join(password_words)
+
+    # Insert random numbers and symbols if requested
+    for i in range(args.numbers):
+        index = random.randint(0, len(password))
+        number = str(random.randint(0, 9))
+        password = password[:index] + number + password[index:]
+
+    symbols = string.punctuation
+    for i in range(args.symbols):
+        index = random.randint(0, len(password))
+        symbol = random.choice(symbols)
+        password = password[:index] + symbol + password[index:]
+
+    print(password)
+
+
+if __name__ == '__main__':
+    main()
